@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class MainClient {
@@ -16,11 +15,18 @@ public class MainClient {
             //out.write(new byte[]{22, 22, 22});
             try(FileInputStream fin=new FileInputStream("D:\\БД\\Storage2\\Input\\Dz"))
             {
+                long sizeOfFile=fin.available();
                 System.out.printf("File size: %d bytes \n", fin.available());
-                int i=-1;
-                while((i=fin.read())!=-1){
-                    out.write((char)i);
+                byte[] data= new byte[1024];
+                int n=1024;
+                while(sizeOfFile/n>=1){
+                    fin.read(data);
+                    out.write(data);
+                    sizeOfFile-=n;
                 }
+                byte[] dataOst = new byte[(int)sizeOfFile%n];
+                fin.read(dataOst);
+                out.write(dataOst);
             }
             catch(IOException ex){
                 System.out.println(ex.getMessage());

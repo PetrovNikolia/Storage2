@@ -15,7 +15,7 @@ public class FirstHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         // Как только получили три байта, готовим массив, чтобы их туда закинуть
-        byte[] data = new byte[3];
+        byte[] data = new byte[30];
         // Перекидываем байты из буфера в массив
         buf.readBytes(data);
         // Освобождаем буфер
