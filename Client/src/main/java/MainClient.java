@@ -1,43 +1,27 @@
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Scanner;
+import java.nio.file.Path;
+import java.util.concurrent.CountDownLatch;
 
 public class MainClient {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, IOException {
+        CountDownLatch networkStarter = new CountDownLatch(1);
+        new Thread(() -> Network.getInstance().start(networkStarter)).start();
+        networkStarter.await();
 
-        try {
-            Socket socket = new Socket("localhost", 8189);
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            Scanner in = new Scanner(socket.getInputStream());
-            //out.write(new byte[]{22, 22, 22});
-            try(FileInputStream fin=new FileInputStream("D:\\БД\\Storage2\\Input\\Dz"))
-            {
-                long sizeOfFile=fin.available();
-                System.out.printf("File size: %d bytes \n", fin.available());
-                byte[] data= new byte[1024];
-                int n=1024;
-                while(sizeOfFile/n>=1){
-                    fin.read(data);
-                    out.write(data);
-                    sizeOfFile-=n;
-                }
-                byte[] dataOst = new byte[(int)sizeOfFile%n];
-                fin.read(dataOst);
-                out.write(dataOst);
+        ProtoFileSender.sendFile(Paths.get("Input/Dz"), Network.getInstance().getCurrentChannel(), future -> {
+            if (!future.isSuccess()) {
+                future.cause().printStackTrace();
+//                Network.getInstance().stop();
             }
-            catch(IOException ex){
-                System.out.println(ex.getMessage());
+            if (future.isSuccess()) {
+                System.out.println("Файл успешно передан");
+//                Network.getInstance().stop();
             }
-            String x = in.nextLine();
-            System.out.println("A: " + x);
-            in.close();
-            out.close();
-            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
+
     }
 }

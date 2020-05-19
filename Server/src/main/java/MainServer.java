@@ -20,7 +20,7 @@ public class MainServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception { // настройка конвеера для каждого подключившегося клиента
-                            ch.pipeline().addLast(new StringToByteBufHandler(), new FirstHandler(), new SecondHandler(), new GatewayHandler(), new FinalHandler());
+                            ch.pipeline().addLast(new GatewayHandler());
                         }
                     });
             ChannelFuture f = b.bind(8189).sync(); // запуск прослушивания порта 8189 для подключения клиентов
