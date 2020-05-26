@@ -56,7 +56,8 @@ public class GatewayHandler extends ChannelInboundHandlerAdapter {
                     byte[] fileName = new byte[nextLength];
                     buf.readBytes(fileName);
                     System.out.println("STATE: Filename received - _" + new String(fileName, "UTF-8"));
-                    out = new BufferedOutputStream(new FileOutputStream( new String(fileName)));
+                    String FN = new String(fileName);
+                    out = new BufferedOutputStream(new FileOutputStream("Output" + FN));
                     currentState = State.FILE_LENGTH;
                 }
             }

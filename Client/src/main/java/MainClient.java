@@ -1,27 +1,21 @@
-import java.io.*;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.Scanner;
-import java.nio.file.Path;
-import java.util.concurrent.CountDownLatch;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-public class MainClient {
-    public static void main(String[] args) throws InterruptedException, IOException {
-        CountDownLatch networkStarter = new CountDownLatch(1);
-        new Thread(() -> Network.getInstance().start(networkStarter)).start();
-        networkStarter.await();
+public class MainClient extends Application {
 
-        ProtoFileSender.sendFile(Paths.get("Input/Dz"), Network.getInstance().getCurrentChannel(), future -> {
-            if (!future.isSuccess()) {
-                future.cause().printStackTrace();
-//                Network.getInstance().stop();
-            }
-            if (future.isSuccess()) {
-                System.out.println("Файл успешно передан");
-//                Network.getInstance().stop();
-            }
-        });
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("client.fxml"));
+        primaryStage.setTitle("Storage");
+        primaryStage.setScene(new Scene(root,300,500));
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
 
+    public static void main(String[] args) {
+        launch(args);
     }
 }
